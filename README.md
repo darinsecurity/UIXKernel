@@ -1,8 +1,10 @@
 # UIXKernel
 <img src="/display/UIX_Large.png" alt="UIX Logo" style="width:25%;">
 
-### A capable UNIX simulator
-# UIX (Union OS) Interactive Python Subsystem
+### A capable universal UNIX simulator
+#### UIX (Union OS) Interactive Python Subsystem
+
+[Releases](https://github.com/darinsecurity/UIXKernel/releases)
 
 <details>
   <summary><b>Contents</b></summary>
