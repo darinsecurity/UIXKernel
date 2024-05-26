@@ -10,8 +10,8 @@
   1. [Features](#features)
   2. [Supported Devices](#supported-devices)
   3. [Compilation](#compilation)
-  4. [Usage](usage-of-uix-os)
-  5. [Compilation Features](compiling-with-features)
+  4. [Usage](#usage-of-uix-os)
+  5. [Compilation Features](#compiling-with-features)
 </details>
 
 This is the source code repository for the **Union IX Kernel** (or **UIX**), a capable universal UNIX-like operating system simulator that runs within Python. UIX OS runs under a Python subsystem defined with a set of operating-system-like POSIX classes (VPOSIX) and features of operating systems, such as microservices, memory management, etc.
