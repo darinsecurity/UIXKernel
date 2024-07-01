@@ -2,6 +2,17 @@ from libassembly import LibraryAssembly
 
 class SystemLib:
    supported_libraries = {}
+   override_imports = {} # name: module to override import
+   _original_import_method = None
+
+   @classmethod
+   def _import_lib_h(self, name, *args, **kwargs):
+      # Import lib handler to override __import__
+      if self.override_imports.get(name, None):
+         return self.override_imports[name]
+      return self._original_import_method(name, *args, **kwargs)
+
+   
    def get_supported():
       l = []
       for k, v in SystemLib.supported_libraries.items():
@@ -18,7 +29,7 @@ class SystemLib:
       return name in SystemLib.supported_libraries
 
    @classmethod
-   def import_lib(self, name, add_supported=True):
+   def import_host_lib(self, name, add_supported=True):
       if self.supports_lib(name):
          return True, None
       try:

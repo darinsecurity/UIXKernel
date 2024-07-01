@@ -1,6 +1,6 @@
 class BaseSystem:
-   version = 1
-   subversion = 1
+   version = "1.1.1"
+   subversion = ""
    name = "UIXKernel"
    prefix = "uix"
    default_program = "bsi"

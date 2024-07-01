@@ -1,6 +1,8 @@
 import logging
 import os
 import compilelib
+import dct
+import alterimports
 from extension import ext, strip_extension
 import cleancode
 
@@ -136,12 +138,62 @@ def compile(Args, Output):
          global_dependencies_line += f"import {dependency}\n"
 
    
-   
+   logging.info("\n3: Adding programs and libraries in DCT format in autoinsert header.")
 
+   autoinsert_lines = []
+
+   def get_file_name_without_extension(path):
+       # Get the file name from the path
+       file_name = os.path.basename(path)
+       # Split the file name and extension
+       name_without_extension, _ = os.path.splitext(file_name)
+       return name_without_extension
+      
+   def add_sequential(name, loc, import_type):
+      file_path = os.path.join(loc, name)
+      if not os.path.exists(file_path):
+         logging.error(f"Module `{name}` in `{loc}` does not exist! ({import_type})")
+         return
+
+      import_code = ""
+      with open(file_path, "r+") as f:
+         import_code = f.read()
+
+      if getattr(Args, "clean_code_dependencies", False):
+         import_code = cleancode.clean_code(import_code)
+
+      import_name = get_file_name_without_extension(name)
+
+      if 'g_use_builtin_import' in Args.headers: #global use builtins import
+         import_code = alterimports.replace_imports(import_code)
+
+      import_code = prefilter_compilation(import_code)
+
+      import_code = dct.to_raw_string(import_code)
+      
+      if import_type == "library":
+         autoinsert_lines.append(f"LibraryAssembly.libraries['{import_name}'] = {import_code}")
+         autoinsert_lines.append(f"""LibraryAssembly.included["{import_name}"] = True""")
+      elif import_type == "program":
+         autoinsert_lines.append(f"ProgramAssembly.programs['{import_name}'] = {import_code}")
+      else:
+         logging.error(f"Unrecognized import type {import_type}")
+
+   for library in Args.libs:
+      add_sequential(library, "libs", "library")
+      
+   for program in Args.package_programs:
+      add_sequential(program, "programs", "program")
+   autoinsert_lines.append(f'ProgramAssembly.program_count = {len(Args.package_programs)}')
+
+   # merge append operations
+   kernel_lines[autoinsert_header] = "\n".join(autoinsert_lines)
+   
    result = global_dependencies_line+"\n".join(kernel_lines)
 
    if getattr(Args, "clean_code_space", None):
       logging.info("Cleaning code space (refactor with ast)..")
+      
       result = cleancode.clean_code(result)
 
    logging.info(f"Saving result to result/{Output.output_file}")

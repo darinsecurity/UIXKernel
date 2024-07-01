@@ -39,7 +39,8 @@ class FileSystem:
             os.mkdir('kernel')
             dump_pstate()
          
-         import os
+         #import os
+         # os is already defined as an overriden module
          
          status = FSDriver.connect_fsi()
       

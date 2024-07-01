@@ -1,0 +1,12 @@
+Virtual Python POSIX Subsystem
+
++ clear_term (0)
+Clears the terminal interface.
+
++ exit_program (1)
++ Exits the actively running program on the subsystem.
+
++ exit_system (2) (privileged)
++ Request to exit the system.
+- Only executable by the BSI (Base System Interpreter) if POSIX.ProgramState.active_program == "bsi"
+- Else, raise Interrupts.PrivilegeRequired

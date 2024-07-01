@@ -9,10 +9,14 @@ if COMPILATION.get_headers('hardware'):
    from hardware import Hardware
 from sysflags import Flags
 import util
+import COMPILATION
 
 class BaseSystemInterface:
    msg = Info.get_header()
-   prefix = "$:"
+   prefix = "#"
+
+   if COMPILATION.get_headers('filesystem'):
+      current_working_dir = "/"
 
    class BlankTermInput(Exception):
       pass
@@ -43,8 +47,9 @@ class BaseSystemInterface:
                cmd = "help"
             if cmd == "help":
                print("Usage: hwservice\n Hardware service for UIX.")
-            elif cmd == "info":
-               print("Hardware service info:\nCPU Count:{} \nCPU Frequency :{}\n".format(Hardware.cpu_count, Hardware.cpu_freq))
+               cmd = "info"
+            if cmd == "info":
+               print("Hardware service info:\nCPU Count: {}\nCPU Frequency :{}\n".format(Hardware.cpu_count, Hardware.cpu_freq))
                print("Commands: {}".format(", ".join(self.HWService.hw_service_list)))
             if COMPILATION.get_headers('clockmod'):
                elif cmd == "freq":
@@ -114,6 +119,16 @@ class BaseSystemInterface:
          print(", ".join(ProgramAssembly.get_all_programs()))
 
    @classmethod
+   def display_init_msg(self):
+      print(self.msg + " on " + str(CompatFlags.system_type))
+      suffix_word = ""
+      if ProgramAssembly.program_count != 1:
+         suffix_word = "s"
+      print("{} program{} on system.".format(ProgramAssembly.program_count, suffix_word))
+      print("Type `help` for help.")
+      
+
+   @classmethod
    def get_command(self, name):
       if name in self.Commands.commands:
          func = getattr(self.Commands, name, None)
@@ -125,16 +140,19 @@ class BaseSystemInterface:
 
    @classmethod
    def run(self):
-      print(self.msg + " on " + str(CompatFlags.system_type))
+      #print(self.msg + " on " + str(CompatFlags.system_type))
 
       suffix_word = ""
       if ProgramAssembly.program_count != 1:
          suffix_word = "s"
-      print("{} program{} on system.".format(ProgramAssembly.program_count, suffix_word))
-      print("Type `help` for help.")
+      # print("{} program{} on system.".format(ProgramAssembly.program_count, suffix_word))
+      # print("Type `help` for help.")
       while True:
          try:
-            user_input = input(self.prefix + " ")
+            additional_prefix = ""
+            if COMPILATION.get_headers('filesystem'):
+               additional_prefix = os.getcwd()
+            user_input = input("({}) {}:{} ".format(self.prefix, BaseSystem.prefix, additional_prefix))
 
             args = user_input.split(" ")
             if args == ['']:
@@ -156,7 +174,7 @@ class BaseSystemInterface:
                # else:
                #    command_method(self.Commands, user_input)
             elif is_packaged_program:
-               return command, command
+               return command, command, args
             else:
                print("{}: unknown command or program `{}`".format(BaseSystem.prefix, command))
          except self.BlankTermInput:
