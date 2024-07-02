@@ -1,3 +1,6 @@
 import os
 import sys
-os.chdir(sys.argv[1])
+args = sys.argv
+if len(args) == 1:
+    args.append("/")
+os.chdir(args[1])

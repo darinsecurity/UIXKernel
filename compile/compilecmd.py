@@ -7,6 +7,7 @@ version = "1.0"
 
 parser = argparse.ArgumentParser(description="uixcompile: Compile the UIX Kernel to yield the UIX Operating System")
 print(f"UIXCompile for UIXKernel ({version})")
+
 parser.add_argument('-dist', help="Target distribution (in /compile/dists.) Specifies custom profile that supplements arguments.", default="unix")
 parser.add_argument('-base-config', type=str, help="Specify base configuration (config.py) overlayed over the target distribution.", default="default_config")
 parser.add_argument('-target', help="Target result name. Specify <dist> for dist, <ver> for version string.", default="uixos-{ver}-{dist}.py")
