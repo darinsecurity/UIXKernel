@@ -4,7 +4,7 @@ from util import util
 from simpledec import SimpleDEC
 if COMPILATION.get_headers('hardware'):
    from hardware import Hardware
-      
+
 if COMPILATION.get_headers('interrupts'):
    from interrupts import Interrupts
    
@@ -51,6 +51,8 @@ from compatunits import CompatibilityUnits
 from compatflags import CompatFlags
 from basesysint import BaseSystemInterface
 from vposix import POSIX
+if COMPILATION.get_headers('taskscheduler'):
+   from taskscheduler import TaskScheduler
 import COMPILATION
 ### END // AUTOREPLACE ###
 ### LIBRARY // AUTOREPLACE ###
@@ -160,7 +162,11 @@ if COMPILATION.get_headers("freemem"):
 if COMPILATION.get_headers("filesystem"):
    log("Filesystem enabled!")
    FileSystem.init()
-   
+
+if COMPILATION.get_headers("taskscheduler"):
+   Kernel.log("Using single threaded task scheduler.")
+   task_scheduler = TaskScheduler()
+
 log("Capturing state..")
 clear_terminal = False
 POSIX.Interpreter.capture_variable()
